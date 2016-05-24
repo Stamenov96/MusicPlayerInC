@@ -1,8 +1,8 @@
 #include "input.h"
 
 extern void playSound(Mix_Chunk *sfx);
-extern void pauseSound(Mix_Chunk *sfx);
-extern void resumeSound(Mix_Chunk *sfx);
+extern void pauseSound();
+extern void resumeSound();
 
 void getInput()
 {
