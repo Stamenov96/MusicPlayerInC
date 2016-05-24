@@ -21,3 +21,15 @@ void playSound(Mix_Music *sfx)
 	Mix_PlayMusic(sfx, -1);
 }
 
+void pauseSound(Mix_Music *sfx)
+{
+	
+		Mix_PauseMusic();
+}
+
+void resumeSound(Mix_Music *sfx)
+{
+		Mix_ResumeMusic();
+	
+}
+

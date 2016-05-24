@@ -1,6 +1,8 @@
 #include "input.h"
 
 extern void playSound(Mix_Chunk *sfx);
+extern void pauseSound(Mix_Chunk *sfx);
+extern void resumeSound(Mix_Chunk *sfx);
 
 void getInput()
 {
@@ -26,6 +28,14 @@ void getInput()
 				{
 					case SDLK_SPACE:
 						playSound(dexterBark);
+					break;
+					
+					case SDLK_UP:
+						pauseSound(dexterBark);
+					break;
+					
+					case SDLK_DOWN:
+						resumeSound(dexterBark);
 					break;
 					
 					case SDLK_ESCAPE:
