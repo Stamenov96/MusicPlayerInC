@@ -116,8 +116,8 @@ void* console(void* arg)
 					else
 					{
 						send_command(COMMAND_PLAY, curr->filename, comm_head);
-						playing = 1;
-						stopped = 0;
+						//playing = 1;
+						//stopped = 0;
 					}
 				}
 			}
@@ -139,15 +139,10 @@ void* console(void* arg)
 		//PAUSE
 		if(command_index == COMMAND_PAUSE)
 		{
-			if(playing)
-			{
+			
 				send_command(COMMAND_PAUSE, NULL, comm_head);
-				playing = 0;
-			}
-			else
-			{
-				printf("Nothing is playing at the moment.\n");
-			}
+				//playing = 0;
+			
 		}
 		
 		//STOP

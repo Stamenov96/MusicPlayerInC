@@ -69,7 +69,8 @@ int main(int argc, char *argv[])
 			if(comm_head->next->parameter != NULL){
 				soundFile = loadSound(comm_head->next->parameter);
 			}
-			getInput(comm_head->next->command);
+		getInput(comm_head->next->command);
+		comm_head=comm_head->next;
 		}
 		
 		updateScreen();
