@@ -27,15 +27,15 @@ void getInput()
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_SPACE:
-						playSound(dexterBark);
+						playSound(soundFile);
 					break;
 					
 					case SDLK_UP:
-						pauseSound(dexterBark);
+						pauseSound(soundFile);
 					break;
 					
 					case SDLK_DOWN:
-						resumeSound(dexterBark);
+						resumeSound(soundFile);
 					break;
 					
 					case SDLK_ESCAPE:

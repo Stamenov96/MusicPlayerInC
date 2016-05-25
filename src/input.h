@@ -1,3 +1,3 @@
 #include "defs.h"
 
-extern Mix_Chunk *dexterBark;
+extern Mix_Chunk *soundFile;

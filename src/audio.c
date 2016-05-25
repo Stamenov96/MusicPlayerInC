@@ -1,4 +1,5 @@
-#include "audio.h"
+#include "defs.h"
+
 
 Mix_Music *loadSound(char *name)
 {

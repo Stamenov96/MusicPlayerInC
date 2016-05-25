@@ -1,7 +1,7 @@
 CFLAGS = -Wall -pedantic -Werror
 LFLAGS = `sdl-config --libs` -lSDL -lSDL_image -lSDL_mixer
 OBJS   = audio.o init.o input.o graphics.o main.o
-PROG = tutorial03
+PROG = MusicPlayerInC
 CXX = gcc
 
 # top-level rule to create the program.

@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	
 	/* Start up SDL */
 	
-	init("Parallel Realities Tutorial 3");
+	init("Music Player in C");
 	
 	/* Call the cleanup function when the program exits */
 	
@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
 	}
 	
 //	dexterBark = loadSound("sound/woof.wav");
-	dexterBark = loadSound("sound/bb.mp3");
+	soundFile = loadSound("sound/bb.mp3");
 	
 	/* If we get back a NULL sound, just exit */
 	
-	if (dexterBark == NULL)
+	if (soundFile == NULL)
 	{
 		exit(0);
 	}

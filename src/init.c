@@ -47,9 +47,9 @@ void cleanup()
 	
 	/* Free the sound effect */
 	
-	if (dexterBark != NULL)
+	if (soundFile != NULL)
 	{
-		Mix_FreeChunk(dexterBark);
+		Mix_FreeChunk(soundFile);
 	}
 	
 	/* Close the mixer */
