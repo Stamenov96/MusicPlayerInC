@@ -1,5 +1,6 @@
 #include "init.h"
 
+
 void init(char *title)
 {
 	/* Initialise SDL Video and Audio */
@@ -58,5 +59,7 @@ void cleanup()
 	
 	/* Shut down SDL */
 	
+	
 	SDL_Quit();
+	
 }

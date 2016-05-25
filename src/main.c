@@ -5,13 +5,19 @@
 */
 
 #include "main.h"
+#include "console_thread.h"
+#include "input.h"
 
+extern void playSound(Mix_Chunk *sfx);
+extern void pauseSound();
+extern void resumeSound();
+extern void updateScreen(void);
 extern void init(char *);
 extern void cleanup(void);
-extern void getInput(void);
+extern void getInput(int);
 extern SDL_Surface *loadImage(char *);
 extern Mix_Chunk *loadSound(char *);
-extern void updateScreen(void);
+extern Mix_Chunk *soundFile;
 
 int main(int argc, char *argv[])
 {
@@ -36,25 +42,40 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 	
-//	dexterBark = loadSound("sound/woof.wav");
-	soundFile = loadSound("sound/bb.mp3");
 	
-	/* If we get back a NULL sound, just exit */
+	Communication* comm_head = (Communication*)malloc(sizeof(Communication));
+	comm_head->command= COMMAND_NULL;
+	comm_head->next= NULL;
+	comm_head->parameter=NULL;
+	
+	pthread_t new_thread;
+		
+	pthread_create (&new_thread, NULL ,console,(void*)comm_head);
+	
+	
+	
+	/* If we get back a NULL sound, just exit 
 	
 	if (soundFile == NULL)
 	{
 		exit(0);
 	}
-	
-	/* Loop indefinitely for messages */
+	 Loop indefinitely for messages */
 	
 	while (go == 1)
 	{
-		getInput();
+		if(comm_head->next != NULL){
+			
+			if(comm_head->next->parameter != NULL){
+				soundFile = loadSound(comm_head->next->parameter);
+			}
+			getInput(comm_head->next->command);
+		}
 		
 		updateScreen();
 		
 		/* Sleep briefly to stop sucking up all the CPU time */
+		
 		
 		SDL_Delay(16);
 	}

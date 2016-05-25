@@ -8,6 +8,8 @@ typedef struct Communication
 	char* parameter;
 }Communication;
 
+void* console(void* arg);
+
 enum Commands
 {
 	COMMAND_PLAY = 0,
