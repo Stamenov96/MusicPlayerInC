@@ -22,6 +22,8 @@ void send_command(int command, const char* param, Communication* comm_head)
 	
 	Communication* comm = (Communication*)malloc(sizeof(Communication));
 	comm->command = command;
+	comm->next = NULL;
+	curr_comm->next = comm;
 	
 	if(param == NULL)
 	{
