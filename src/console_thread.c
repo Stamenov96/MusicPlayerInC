@@ -62,7 +62,7 @@ void* console(void* arg)
 	// THREAD INIT
 	Communication* comm_head = (Communication*)arg;
 
-	const char delimiters[] = {' ', '\n', '\r', '\t', '\f', '\v'};
+	const char delimiters[] = {' ', '\n', '\r', '\t', '\f', '\v','\0'};
 	const char* commands[] = {"play", "pause", "stop", "next", "prev", "add", "remove", "list"};
 	
 	char quit = 0;
@@ -77,23 +77,30 @@ void* console(void* arg)
 	{
 		//RESET + INPUT
 		command_index = COMMAND_NULL;
-		scanf("%s", buffer);
+		//scanf("%s", buffer);
+		fgets (buffer, 1024, stdin);
 		token = strtok(buffer, delimiters);
-		
+		//printf("--->>>%s<<<---\n",token);
 		//GET COMMAND
 		for(i = 0; i < COMMAND_NULL; i++)
 		{
+		
+			//printf("----token:  %s --- \t command--- %s \n",token,commands[i]);
 			if(strcmp(token, commands[i]) == 0)
 			{
 				command_index = i;
+				//printf("-->>i %d<<--\n",command_index);
 				break;
 			}
 		}
+		
 		token = strtok(NULL, delimiters);
+		//printf("(((((((%s))))))))\n",token);
 		
 		//PLAY
 		if(command_index == COMMAND_PLAY)
 		{
+
 			if(token == NULL)
 			{
 				if(head == tail)

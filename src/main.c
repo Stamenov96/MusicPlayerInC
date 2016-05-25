@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
 	
 	while (go == 1)
 	{
-		if(comm_head->next != NULL){
-			
+		if(comm_head->next != NULL){	
+			//printf("WAZAAAA\n");		
 			if(comm_head->next->parameter != NULL){
 				soundFile = loadSound(comm_head->next->parameter);
 			}
