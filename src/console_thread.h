@@ -8,6 +8,12 @@ typedef struct Communication
 	char* parameter;
 }Communication;
 
+typedef struct Comm
+{
+	pthread_mutex_t *mutex;
+	Communication* head;
+}Comm;
+
 void* console(void* arg);
 
 enum Commands

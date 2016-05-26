@@ -11,8 +11,9 @@ typedef struct Playlist
 	char* filename;
 }Playlist;
 
-void send_command(int command, const char* param, Communication* comm_head)
+void send_command(int command, const char* param, Communication* comm_head, pthread_mutex_t* mutex)
 {
+	pthread_mutex_lock(mutex);
 	Communication* curr_comm = comm_head;
 	
 	while((curr_comm->next) != NULL)
@@ -34,17 +35,20 @@ void send_command(int command, const char* param, Communication* comm_head)
 		comm->parameter = (char*)malloc(strlen(param));
 		strcpy(comm->parameter, param);
 	}
+	pthread_mutex_unlock(mutex);
 }
 
 void kill_playlist(Playlist* head, Playlist* tail)
 {
-	Playlist* curr;
+	Playlist* curr = tail;
 	while(curr != head)
 	{
-		curr = tail;
 		tail = curr->prev;
-		free(curr->filename);
+		if(curr->filename != NULL)
+			free(curr->filename);
 		free(curr);
+		curr = tail;
+		tail->next = NULL;
 	}
 }
 
@@ -60,14 +64,16 @@ void* console(void* arg)
 	Playlist* iter;
 
 	// THREAD INIT
-	Communication* comm_head = (Communication*)arg;
+	Comm* comm = (Comm*)arg;
+	Communication* comm_head = comm->head;
+	pthread_mutex_t* mutex = comm->mutex;
 
 	const char delimiters[] = {' ', '\n', '\r', '\t', '\f', '\v','\0'};
 	const char* commands[] = {"play", "pause", "stop", "next", "prev", "add", "remove", "list"};
 	
 	char quit = 0;
-	char playing = 0;
-	char stopped = 1;
+	//char playing = 0;
+	//char stopped = 1;
 	char buffer[1024];
 	char* token;
 	int i;
@@ -77,49 +83,30 @@ void* console(void* arg)
 	{
 		//RESET + INPUT
 		command_index = COMMAND_NULL;
-		//scanf("%s", buffer);
 		fgets (buffer, 1024, stdin);
 		token = strtok(buffer, delimiters);
-		//printf("--->>>%s<<<---\n",token);
+		
 		//GET COMMAND
 		for(i = 0; i < COMMAND_NULL; i++)
 		{
 		
-			//printf("----token:  %s --- \t command--- %s \n",token,commands[i]);
 			if(strcmp(token, commands[i]) == 0)
 			{
 				command_index = i;
-				//printf("-->>i %d<<--\n",command_index);
 				break;
 			}
 		}
 		
 		token = strtok(NULL, delimiters);
-		//printf("(((((((%s))))))))\n",token);
 		
 		//PLAY
+		//printf("COMMAN INDEXX ==== %d\n",command_index);
 		if(command_index == COMMAND_PLAY)
 		{
 
 			if(token == NULL)
 			{
-				if(head == tail)
-				{
-					printf("Nothing to play.\n");
-				}
-				else
-				{
-					if(playing)
-					{
-						printf("Already playing.\n");
-					}
-					else
-					{
-						send_command(COMMAND_PLAY, curr->filename, comm_head);
-						//playing = 1;
-						//stopped = 0;
-					}
-				}
+				send_command(COMMAND_PLAY, NULL, comm_head, mutex);
 			}
 			else
 			{
@@ -129,35 +116,23 @@ void* console(void* arg)
 				new_song->next = NULL;
 				new_song->filename = (char*)malloc(strlen(token)+1);
 				strcpy(new_song->filename, token);
+				head->next = new_song;
 				tail = new_song;
 				curr = tail;
-				send_command(COMMAND_PLAY, curr->filename, comm_head);
-				playing = 1;
+				send_command(COMMAND_PLAY, curr->filename, comm_head, mutex);
 			}
 		}
 		
 		//PAUSE
 		if(command_index == COMMAND_PAUSE)
 		{
-			
-				send_command(COMMAND_PAUSE, NULL, comm_head);
-				//playing = 0;
-			
+			send_command(COMMAND_PAUSE, NULL, comm_head, mutex);
 		}
 		
 		//STOP
 		if(command_index == COMMAND_STOP)
 		{
-			if(stopped)
-			{
-				printf("Already stopped.\n");
-			}
-			else
-			{
-				send_command(COMMAND_STOP, NULL, comm_head);
-				stopped = 1;
-				playing = 0;
-			}
+			send_command(COMMAND_STOP, NULL, comm_head, mutex);
 		}
 		
 		//NEXT
@@ -170,21 +145,23 @@ void* console(void* arg)
 			else
 			{
 				curr = curr->next;
-				send_command(COMMAND_PLAY, curr->filename, comm_head);
+				send_command(COMMAND_STOP, NULL, comm_head, mutex);
+				send_command(COMMAND_PLAY, curr->filename, comm_head, mutex);
 			}
 		}
 		
 		//PREV
 		if(command_index == COMMAND_PREV)
 		{
-			if(curr->prev == NULL)
+			if(curr->prev == head)
 			{
 				printf("No previous song.\n");
 			}
 			else
 			{
 				curr = curr->prev;
-				send_command(COMMAND_PLAY, curr->filename, comm_head);
+				send_command(COMMAND_STOP, NULL, comm_head, mutex);
+				send_command(COMMAND_PLAY, curr->filename, comm_head, mutex);
 			}
 		}
 		
@@ -198,11 +175,21 @@ void* console(void* arg)
 			else
 			{
 				Playlist* new_song = (Playlist*)malloc(sizeof(Playlist));
-				new_song->next = curr->next;
-				new_song->prev = curr;
 				new_song->filename = (char*)malloc(strlen(token) + 1);
 				strcpy(new_song->filename, token);
+				
+				new_song->next = curr->next;
+				new_song->prev = curr;
 				curr->next = new_song;
+				
+				if(curr != tail)
+				{
+					new_song->next->prev = new_song;
+				}
+				else
+				{
+					tail = new_song;
+				}
 			}
 		}
 		
@@ -218,17 +205,23 @@ void* console(void* arg)
 				(curr->prev)->next = curr->next;
 			}
 			Playlist* help = curr->next;
-			free(curr->filename);
+			if(curr->filename != NULL)
+				free(curr->filename);
 			free(curr);
 			curr = help;
 		}
 		
 		//LIST
+		printf("000000000  %d\n",command_index);
 		if(command_index == COMMAND_LIST)
 		{
+			printf("BLYAT\n");
 			iter = head->next;
-			for(i = 1; iter != tail; i++)
+			
+			for(i = 1; iter != NULL; i++)
 			{
+				
+			printf("CYKAAA\n");
 				printf("%d. %s", i, iter->filename);
 				if(iter == curr)
 				{

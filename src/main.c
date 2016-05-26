@@ -49,8 +49,14 @@ int main(int argc, char *argv[])
 	comm_head->parameter=NULL;
 	
 	pthread_t new_thread;
+	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&mutex);
+	
+	Comm comm;
+	comm.head = comm_head;
+	comm.mutex = &mutex;
 		
-	pthread_create (&new_thread, NULL ,console,(void*)comm_head);
+	pthread_create (&new_thread, NULL ,console,(void*)&comm);
 	
 	
 	
@@ -65,13 +71,21 @@ int main(int argc, char *argv[])
 	while (go == 1)
 	{
 		if(comm_head->next != NULL){	
-			//printf("WAZAAAA\n");		
+			//printf("WAZAAAA\n");
+			pthread_mutex_lock(&mutex);
 			if(comm_head->next->parameter != NULL){
 				soundFile = loadSound(comm_head->next->parameter);
 			}
 		getInput(comm_head->next->command);
-		comm_head=comm_head->next;
+		
+		Communication* curr = comm_head->next;
+		//comm_head=comm_head->next;
+		comm_head->next = curr->next;
+		if(curr->parameter != NULL)
+			free(curr->parameter);
+		free(curr);
 		}
+		pthread_mutex_unlock(&mutex);
 		
 		updateScreen();
 		
@@ -80,7 +94,8 @@ int main(int argc, char *argv[])
 		
 		SDL_Delay(16);
 	}
-	
+	pthread_join(new_thread,NULL);
+	pthread_mutex_destroy();
 	/* Exit the program */
 	
 	exit(0);
