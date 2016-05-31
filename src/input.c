@@ -37,6 +37,9 @@ void getInput(int command)
 		case COMMAND_STOP:
 			Mix_HaltMusic();
 		break;
+		
+		case COMMAND_QUIT:
+				exit(0);
 					
 		default:
 		break;

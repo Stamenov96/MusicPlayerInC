@@ -70,7 +70,7 @@ void* console(void* arg)
 	pthread_mutex_t* mutex = comm->mutex;
 
 	const char delimiters[] = {' ', '\n', '\r', '\t', '\f', '\v','\0'};
-	const char* commands[] = {"play", "pause", "stop", "next", "prev", "add", "remove", "list"};
+	const char* commands[] = {"play", "pause", "stop", "next", "prev", "add", "remove", "list","quit"};
 	
 	char quit = 0;
 	//char playing = 0;
@@ -80,11 +80,9 @@ void* console(void* arg)
 	int i;
 	int command_index;
 	
-	printf("-------->>>>>>00 %c\n",quit);
+	
 	while(!quit)
 	{
-		
-	printf("-------->>>>>>0 %c\n",quit);
 		//RESET + INPUT
 		command_index = COMMAND_NULL;
 		fgets (buffer, 1024, stdin);
@@ -97,6 +95,7 @@ void* console(void* arg)
 			if(strcmp(token, commands[i]) == 0)
 			{
 				command_index = i;
+				printf("%d\n",command_index);
 				break;
 			}
 		}
@@ -104,12 +103,8 @@ void* console(void* arg)
 		token = strtok(NULL, delimiters);
 		
 		//PLAY
-		printf("КЪДЕЕЕЕ???");
-		//printf("COMMAN INDEXX ==== %d\n",command_index);
 		if(command_index == COMMAND_PLAY)
 		{
-			printf("GOSHOO\n");
-
 			if(token == NULL)
 			{
 				send_command(COMMAND_PLAY, NULL, comm_head, mutex);
@@ -217,18 +212,13 @@ void* console(void* arg)
 			curr = help;
 		}
 		
-		printf("СЕЕЕЕЕЕ???");
 		//LIST
-		printf("000000000  %d\n",command_index);
 		if(command_index == COMMAND_LIST)
 		{
-			printf("BLYAT\n");
 			iter = head->next;
 			
 			for(i = 1; iter != NULL; i++)
 			{
-				
-			printf("CYKAAA\n");
 				printf("%d. %s", i, iter->filename);
 				if(iter == curr)
 				{
@@ -242,12 +232,11 @@ void* console(void* arg)
 			}
 		}
 		
-		printf("ЧУПИИИИ");
 		//QUIT
+		printf("%d\n",command_index==COMMAND_QUIT);
 		if(command_index == COMMAND_QUIT)
 		{
-			//send_command(COMMAND_QUIT, NULL, comm_head);
-			quit = 1;
+			send_command(COMMAND_QUIT, NULL, comm_head,mutex);
 		}
 		
 		//WRONG COMMAND
@@ -257,9 +246,7 @@ void* console(void* arg)
 		}
 	
 	
-		printf("КВОО СТАА ВВЕЕЕ\n");	
 	}
-	
 	pthread_exit(0);
 	
 	return NULL;
