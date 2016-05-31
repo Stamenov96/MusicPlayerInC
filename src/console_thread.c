@@ -1,8 +1,9 @@
-#include "console_thread.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include "console_thread.h"
 
 typedef struct Playlist
 {
@@ -32,7 +33,7 @@ void send_command(int command, const char* param, Communication* comm_head, pthr
 	}
 	else
 	{
-		comm->parameter = (char*)malloc(strlen(param));
+		comm->parameter = (char*)malloc(strlen(param)+1);
 		strcpy(comm->parameter, param);
 	}
 	pthread_mutex_unlock(mutex);
@@ -79,8 +80,11 @@ void* console(void* arg)
 	int i;
 	int command_index;
 	
+	printf("-------->>>>>>00 %c\n",quit);
 	while(!quit)
 	{
+		
+	printf("-------->>>>>>0 %c\n",quit);
 		//RESET + INPUT
 		command_index = COMMAND_NULL;
 		fgets (buffer, 1024, stdin);
@@ -100,9 +104,11 @@ void* console(void* arg)
 		token = strtok(NULL, delimiters);
 		
 		//PLAY
+		printf("КЪДЕЕЕЕ???");
 		//printf("COMMAN INDEXX ==== %d\n",command_index);
 		if(command_index == COMMAND_PLAY)
 		{
+			printf("GOSHOO\n");
 
 			if(token == NULL)
 			{
@@ -211,6 +217,7 @@ void* console(void* arg)
 			curr = help;
 		}
 		
+		printf("СЕЕЕЕЕЕ???");
 		//LIST
 		printf("000000000  %d\n",command_index);
 		if(command_index == COMMAND_LIST)
@@ -235,10 +242,11 @@ void* console(void* arg)
 			}
 		}
 		
+		printf("ЧУПИИИИ");
 		//QUIT
 		if(command_index == COMMAND_QUIT)
 		{
-			send_command(COMMAND_QUIT, NULL, comm_head);
+			//send_command(COMMAND_QUIT, NULL, comm_head);
 			quit = 1;
 		}
 		
@@ -247,7 +255,12 @@ void* console(void* arg)
 		{
 			printf("This is a wrong command.\n");
 		}
+	
+	
+		printf("КВОО СТАА ВВЕЕЕ\n");	
 	}
+	
 	pthread_exit(0);
+	
 	return NULL;
 }

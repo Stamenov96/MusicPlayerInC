@@ -5,8 +5,8 @@
 */
 
 #include "main.h"
-#include "console_thread.h"
 #include "input.h"
+#include "console_thread.h"
 
 extern void playSound(Mix_Chunk *sfx);
 extern void pauseSound();
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	
 	pthread_t new_thread;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-	pthread_mutex_init(&mutex);
+	pthread_mutex_init(&mutex,NULL);
 	
 	Comm comm;
 	comm.head = comm_head;
@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
 	
 	while (go == 1)
 	{
+		
 		if(comm_head->next != NULL){	
 			//printf("WAZAAAA\n");
 			pthread_mutex_lock(&mutex);
@@ -80,10 +81,23 @@ int main(int argc, char *argv[])
 		
 		Communication* curr = comm_head->next;
 		//comm_head=comm_head->next;
+		
 		comm_head->next = curr->next;
-		if(curr->parameter != NULL)
-			free(curr->parameter);
+		
+		printf("CHECK FREE BEFORE FREE");
+		
+		//printf("----------------------------^^^^^^^^^^^^^^^   %s\n",curr->parameter);
+			
+		if(curr->parameter != NULL){
+			free(curr->parameter);}
+		printf("----------------------------^^^^^^^^^^^^^^^   %s\n",curr->parameter);
+	
+			
 		free(curr);
+		
+		printf("CHECK FREE AFTER FREE");
+			
+		
 		}
 		pthread_mutex_unlock(&mutex);
 		
@@ -95,7 +109,7 @@ int main(int argc, char *argv[])
 		SDL_Delay(16);
 	}
 	pthread_join(new_thread,NULL);
-	pthread_mutex_destroy();
+	pthread_mutex_destroy(&mutex);
 	/* Exit the program */
 	
 	exit(0);
