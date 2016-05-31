@@ -1,6 +1,6 @@
 CFLAGS = -Wall -pedantic -Werror
 LFLAGS = `sdl-config --libs` -lSDL -lSDL_image -lSDL_mixer -pthread
-OBJS   = audio.o init.o input.o graphics.o main.o console_thread.o
+OBJS   = audio.o init.o input.o main.o console_thread.o
 PROG = MusicPlayerInC
 CXX = gcc
 
